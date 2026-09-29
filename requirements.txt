@@ -1,3 +1,4 @@
 Flask>=3.0
 Flask-SQLAlchemy>=3.1
 Flask-Login>=0.6.3
+gunicorn==26.2.0
