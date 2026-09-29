@@ -1,0 +1,8 @@
+{% extends 'base.html' %}{% from '_m.html' import badge %}{% set page = 'customers' %}{% block title %}Customers{% endblock %}
+{% block content %}
+<div class="top"><h1>Customers</h1>{% if current_user.can('customers') %}<a class="btn" href="{{ url_for('customer_new') }}">New customer</a>{% endif %}</div>
+<form class="search"><input name="q" value="{{ q }}" placeholder="Search name, phone or ID number"><button class="btn ghost">Search</button></form>
+<div class="card flush"><div class="scroll"><table><thead><tr><th>Name</th><th>Phone</th><th>ID number</th><th class="r">Owes</th><th></th></tr></thead><tbody>
+{% for c in rows %}<tr><td><a href="{{ url_for('customer_view', cid=c.id) }}">{{ c.full_name }}</a></td><td>{{ c.phone }}</td><td>{{ c.id_number }}</td>
+<td class="r">{{ c.outstanding|money }}</td><td>{% if c.has_default %}{{ badge('defaulted') }}{% elif c.open_loan %}{{ badge(c.open_loan.display_status) }}{% endif %}</td></tr>
+{% else %}<tr><td colspan="5" class="empty">No customers found. Add the first one to get started.</td></tr>{% endfor %}</tbody></table></div></div>{% endblock %}

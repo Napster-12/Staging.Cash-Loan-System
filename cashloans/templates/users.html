@@ -1,0 +1,9 @@
+{% extends 'base.html' %}{% from '_m.html' import csrf, field, badge %}{% set page = 'users' %}{% block title %}Staff{% endblock %}
+{% block content %}
+<div class="top"><h1>Staff</h1></div>
+<div class="cols"><div class="card flush"><table><thead><tr><th>Name</th><th>Access</th><th></th></tr></thead><tbody>
+{% for u in rows %}<tr><td>{{ u.display }}<div class="mut">{{ u.email }}</div></td><td>{{ 'Owner - full access' if u.role == 'owner' else ((u.permissions or '').split(',')|reject('equalto','')|list|length ~ ' of ' ~ PERMS|length ~ ' permissions') }} {% if not u.active %}{{ badge('rejected') }}{% endif %}</td>
+<td class="r">{% if current_user.is_owner or (u.role != 'owner' and u.id != current_user.id) %}<a class="btn sm ghost" href="{{ url_for('user_edit', uid=u.id) }}">Edit</a>{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+{% if current_user.is_owner %}
+<form class="card" method="post"><h2>Add staff member</h2>{{ csrf() }}{{ field('Name', 'name') }}<p></p>{{ field('Email', 'email', '', 'email', True) }}<p></p>{{ field('Temporary password', 'password', '', 'password', True, 'They must change it at first sign-in') }}
+<p><label>Can do</label>{% for k, label in PERMS %}<label class="chk"><input type="checkbox" name="perms" value="{{ k }}">{{ label }}</label>{% endfor %}</p><button class="btn">Add staff member</button></form>{% endif %}</div>{% endblock %}

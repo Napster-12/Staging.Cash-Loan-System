@@ -1,0 +1,45 @@
+{% extends 'base.html' %}{% from '_m.html' import history %}{% set page = 'audit' %}{% block title %}Audit trail{% endblock %}
+{% block content %}
+<div class="top"><div><h1>Audit trail</h1><div class="sub">Every step of every loan, from capture to full repayment, and who handled it</div></div>
+<div class="row-actions">
+{% if not has_events %}
+<form method="post" action="{{ url_for('audit_backfill') }}" onsubmit="return confirm('Build audit history for existing loans from their current records?')">
+<button class="btn ghost">Build history for existing loans</button></form>
+{% endif %}
+<a class="btn ghost" href="{{ url_for('audit_csv', **f) }}">Download CSV</a></div></div>
+
+<div class="kpis">
+<div class="kpi"><span>Events matching filters</span><b>{{ total }}</b></div>
+<div class="kpi ok"><span>Payments collected</span><b>{{ collected|money }}</b></div>
+<div class="kpi"><span>Applications captured</span><b>{{ counts.get('captured', 0) }}</b></div>
+<div class="kpi warn"><span>Approved</span><b>{{ counts.get('approved', 0) }}</b></div>
+<div class="kpi bad"><span>Rejected / written off</span><b>{{ counts.get('rejected', 0) + counts.get('written_off', 0) }}</b></div>
+<div class="kpi ok"><span>Fully repaid</span><b>{{ counts.get('settled', 0) }}</b></div>
+</div>
+
+<form class="card filters">
+<div class="frow">
+<div><label for="f-ref">Loan or customer</label><input id="f-ref" name="ref" value="{{ f.ref }}" placeholder="Reference, name, phone or ID"></div>
+<div><label for="f-event">Step</label><select id="f-event" name="event">
+<option value="">All steps</option>
+{% for k, label in events %}<option value="{{ k }}" {{ 'selected' if f.event == k }}>{{ label }}</option>{% endfor %}
+</select></div>
+<div><label for="f-who">Handled by</label><select id="f-who" name="who">
+<option value="">Everyone</option>
+{% for a in actors %}<option value="{{ a.id }}" {{ 'selected' if f.who == a.id|string }}>{{ a.display }}{% if a.role == 'owner' %} (owner){% endif %}</option>{% endfor %}
+</select></div>
+<div><label for="f-status">Loan status</label><select id="f-status" name="status">
+<option value="">Any status</option>
+{% for s in statuses %}<option value="{{ s }}" {{ 'selected' if f.status == s }}>{{ s|title }}</option>{% endfor %}
+</select></div>
+</div>
+<div class="frow">
+<div><label for="f-from">From date</label><input id="f-from" type="date" name="from" value="{{ f.frm }}"></div>
+<div><label for="f-to">To date</label><input id="f-to" type="date" name="to" value="{{ f.to }}"></div>
+<div class="fbtns"><button class="btn">Apply filters</button><a class="btn ghost" href="{{ url_for('audit') }}">Clear</a></div>
+</div>
+</form>
+
+<div class="card flush">{{ history(rows, true, 'No audit events match these filters.') }}
+{% if total > shown %}<div class="foot">Showing the {{ shown }} most recent of {{ total }} matching events. Narrow the filters, or download the CSV for the full history.</div>{% endif %}
+</div>{% endblock %}
