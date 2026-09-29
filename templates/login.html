@@ -1,0 +1,12 @@
+{% extends 'base.html' %}{% from '_m.html' import csrf %}{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="stage-banner" role="note">
+  <b>Staging / test environment</b>
+  <span>Sample data only. Do not enter real customer or financial information.</span>
+</div>
+<form class="login" method="post">{{ csrf() }}
+  <h1>{{ COMPANY }}</h1><p class="mut">Sign in to manage loans and collections.</p>
+  <p><label for="email">Email</label><input id="email" name="email" type="email" required autofocus></p>
+  <p><label for="password">Password</label><input id="password" name="password" type="password" required></p>
+  <button class="btn">Sign in</button>
+</form>{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% from '_m.html' import badge %}{% set page = 'customers' %}{% block title %}{{ c.full_name }}{% endblock %}
+{% block content %}
+<div class="top"><div><h1>{{ c.full_name }}</h1><div class="sub">Customer since {{ c.created_at|d }}</div></div>
+<div class="row-actions">{% if current_user.can('customers') %}<a class="btn ghost" href="{{ url_for('customer_edit', cid=c.id) }}">Edit</a>{% endif %}
+{% if current_user.can('apply') %}{% if c.open_loan or c.has_default %}<a class="btn" disabled>New loan unavailable</a>{% else %}<a class="btn" href="{{ url_for('loan_new', customer_id=c.id) }}">New loan</a>{% endif %}{% endif %}</div></div>
+{% if c.has_default %}<div class="flash error">This customer has a defaulted loan and cannot borrow again.</div>{% elif c.open_loan %}<div class="flash info">Has a {{ c.open_loan.status }} loan ({{ c.open_loan.reference }}). A new loan can be captured after it is paid.</div>{% endif %}
+<div class="cols"><div class="card flush"><h2>Loan history</h2><div class="scroll"><table><thead><tr><th>Loan</th><th class="r">Amount</th><th class="r">Balance</th><th>Status</th></tr></thead><tbody>
+{% for l in c.loans %}<tr><td><a href="{{ url_for('loan_view', lid=l.id) }}">{{ l.reference }}</a><div class="mut">{{ l.created_at|d }}</div></td><td class="r">{{ l.principal|money }}</td><td class="r">{{ l.balance|money }}</td><td>{{ badge(l.display_status) }}</td></tr>
+{% else %}<tr><td colspan="4" class="empty">No loans yet.</td></tr>{% endfor %}</tbody></table></div></div>
+<div class="card"><h2>Details</h2><dl><dt>ID number</dt><dd>{{ c.id_number }}</dd><dt>Phone</dt><dd>{{ c.phone }}</dd><dt>Email</dt><dd>{{ c.email or '-' }}</dd>
+<dt>Employer</dt><dd>{{ c.employer or '-' }}</dd><dt>Income</dt><dd>{{ c.monthly_income|money }}</dd><dt>Address</dt><dd>{{ c.address or '-' }}</dd></dl></div></div>{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}{% set page = 'reports' %}{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="top"><h1>Reports</h1></div>
+<div class="kpis"><div class="kpi"><span>Total lent out</span><b>{{ disbursed|money }}</b></div><div class="kpi"><span>Interest contracted</span><b>{{ interest|money }}</b></div>
+<div class="kpi ok"><span>Total collected</span><b>{{ collected|money }}</b></div><div class="kpi warn"><span>Still owed (active)</span><b>{{ book|money }}</b></div>
+<div class="kpi bad"><span>Written-off balance</span><b>{{ written_off|money }}</b></div></div>
+<div class="cols"><div class="card"><h2>Download CSV (opens in Excel)</h2><div class="row-actions">
+{% for k, label in [('loans','All loans'),('payments','All payments'),('overdue','Overdue loans'),('customers','Customers')] %}<a class="btn ghost" href="{{ url_for('report_csv', kind=k) }}">{{ label }}</a>{% endfor %}</div></div>
+<div class="card"><h2>Loans by status</h2><dl>{% for s, n in counts.items() %}<dt>{{ s|title }}</dt><dd>{{ n }}</dd>{% endfor %}</dl></div></div>{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% from '_m.html' import badge %}{% set page = 'loans' %}{% block title %}Loans{% endblock %}
+{% block content %}
+<div class="top"><h1>Loans</h1>{% if current_user.can('apply') %}<a class="btn" href="{{ url_for('loan_new') }}">New loan application</a>{% endif %}</div>
+<div class="tabs"><a href="{{ url_for('loans', q=q) }}" class="{{ '' if st else 'on' }}">All</a>
+{% for s in statuses %}<a href="{{ url_for('loans', status=s, q=q) }}" class="{{ 'on' if st == s else '' }}">{{ s|title }}<small>{{ counts[s] }}</small></a>{% endfor %}</div>
+<form class="search"><input type="hidden" name="status" value="{{ st }}"><input name="q" value="{{ q }}" placeholder="Search customer or loan number"><button class="btn ghost">Search</button></form>
+<div class="card flush"><div class="scroll"><table><thead><tr><th>Loan</th><th>Customer</th><th class="r">Amount</th><th class="r">Balance</th><th>Next due</th><th>Status</th></tr></thead><tbody>
+{% for l in rows %}<tr><td><a href="{{ url_for('loan_view', lid=l.id) }}">{{ l.reference }}</a></td><td>{{ l.customer.full_name }}</td><td class="r">{{ l.principal|money }}</td>
+<td class="r">{{ l.balance|money }}</td><td>{{ l.next_due.due_date|d if l.status == 'active' and l.next_due else '-' }}</td><td>{{ badge(l.display_status) }}</td></tr>
+{% else %}<tr><td colspan="6" class="empty">No loans match. Try another filter.</td></tr>{% endfor %}</tbody></table></div></div>{% endblock %}

@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% set page = 'payments' %}{% block title %}Payments{% endblock %}
+{% block content %}
+<div class="top"><div><h1>Payments</h1><div class="sub">Latest 300 payments</div></div></div>
+<div class="card flush"><div class="scroll"><table><thead><tr><th>Date</th><th>Loan</th><th>Customer</th><th class="r">Amount</th><th>Method</th><th>Recorded by</th></tr></thead><tbody>
+{% for p in rows %}<tr><td>{{ p.paid_at|d }}</td><td><a href="{{ url_for('loan_view', lid=p.loan_id) }}">{{ p.loan.reference }}</a></td><td>{{ p.loan.customer.full_name }}</td><td class="r">{{ p.amount|money }}</td><td>{{ p.method|upper }}</td><td>{{ p.recorded_by.display if p.recorded_by else '-' }}</td></tr>
+{% else %}<tr><td colspan="6" class="empty">No payments recorded yet. Open an active loan and choose Record payment.</td></tr>{% endfor %}</tbody></table></div></div>{% endblock %}
