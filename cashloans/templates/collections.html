@@ -1,9 +1,0 @@
-{% extends 'base.html' %}{% set page = 'collections' %}{% block title %}Collections{% endblock %}
-{% block content %}
-<div class="top"><div><h1>Collections</h1><div class="sub">Loans with a missed instalment, longest overdue first</div></div>
-{% if current_user.can('reports') %}<a class="btn ghost" href="{{ url_for('report_csv', kind='overdue') }}">Download list</a>{% endif %}</div>
-<div class="card flush"><div class="scroll"><table><thead><tr><th>Customer</th><th>Phone</th><th>Loan</th><th class="r">Overdue</th><th class="r">Balance</th><th class="r">Days late</th><th></th></tr></thead><tbody>
-{% for l in rows %}<tr><td>{{ l.customer.full_name }}</td><td><a href="tel:{{ l.customer.phone }}">{{ l.customer.phone }}</a></td><td><a href="{{ url_for('loan_view', lid=l.id) }}">{{ l.reference }}</a></td>
-<td class="r">{{ l.overdue_amount|money }}</td><td class="r">{{ l.balance|money }}</td><td class="r">{{ l.days_overdue }}</td>
-<td class="r">{% if current_user.can('payments') %}<a class="btn sm" href="{{ url_for('payment_new', lid=l.id) }}">Record payment</a>{% endif %}</td></tr>
-{% else %}<tr><td colspan="7" class="empty">No overdue loans. Everyone is up to date.</td></tr>{% endfor %}</tbody></table></div></div>{% endblock %}
